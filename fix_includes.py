@@ -543,8 +543,12 @@ def _ReadWriteableFile(filename, ignore_writeable):
 
 def _WriteFileContentsToFileObject(f, file_lines, line_ending):
   """Write the given file-lines to the file."""
-  f.write(line_ending.join(file_lines).encode())
-  f.write(line_ending.encode())
+  try:
+    f.write(line_ending.join(file_lines).encode('utf-8'))
+    f.write(line_ending.encode('utf-8'))
+  except UnicodeDecodeError:
+    f.write(line_ending.join(file_lines).decode('cp1252').encode('utf-8'))
+    f.write(line_ending.decode('cp1252').encode('utf-8'))
 
 def _DetectLineEndings(filename):
   """Detect line ending of given file."""
